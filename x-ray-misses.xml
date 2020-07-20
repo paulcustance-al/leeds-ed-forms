@@ -1,0 +1,584 @@
+<xh:html xmlns:xh="http://www.w3.org/1999/xhtml"
+         xmlns:xxf="http://orbeon.org/oxf/xml/xforms"
+         xmlns:xxi="http://orbeon.org/oxf/xml/xinclude"
+         xmlns:saxon="http://saxon.sf.net/"
+         xmlns:fr="http://orbeon.org/oxf/xml/form-runner"
+         xmlns:xf="http://www.w3.org/2002/xforms"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:sql="http://orbeon.org/oxf/xml/sql"
+         xmlns:ev="http://www.w3.org/2001/xml-events"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         xmlns:exf="http://www.exforms.org/exf/1-0"
+         xmlns:nf="urn:nhs:forms:framework"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:math="java:java.lang.Math"
+         xmlns:fb="http://orbeon.org/oxf/xml/form-builder"
+         xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    <xh:head>
+        <xh:title>X-Ray Misses</xh:title>
+        <xf:model id="fr-form-model" xxf:expose-xpath-types="true">
+
+            <!-- Main instance -->
+            <xf:instance id="fr-form-instance" xxf:exclude-result-prefixes="#all" xxf:index="id">
+                <form>
+                    <section-1>
+                        <xray-type/>
+                        <xr-site/>
+                        <xr-side/>
+                        <control-9/>
+                        <control-4/>
+                        <further-management-required/>
+                        <chest-management/>
+                        <management-skeletal/>
+                        <other/>
+                        <outcome/>
+                        <control-10/>
+                    </section-1>
+                </form>
+            </xf:instance>
+
+            <!-- Bindings -->
+            <xf:bind id="fr-form-binds" ref="instance('fr-form-instance')">
+                <xf:bind id="section-1-bind" name="section-1" ref="section-1">
+                    <xf:bind id="xray-type-bind" ref="xray-type" name="xray-type"/>
+                    <xf:bind id="control-4-bind" ref="control-4" name="control-4" type="xs:boolean"
+                             required="true()"
+                             relevant="$xray-type != ''"/>
+                    <xf:bind id="further-management-required-bind" ref="further-management-required"
+                             name="further-management-required"
+                             type="xs:boolean"
+                             relevant="$xray-type != ''"
+                             required="true()"/>
+                    <xf:bind id="outcome-bind" ref="outcome" name="outcome"
+                             relevant="$xray-type != '' and $further-management-required = 'true'"
+                             required="true()"/>
+                    <xf:bind id="xr-site-bind" ref="xr-site" name="xr-site" required="true()"
+                             relevant="$xray-type = 'skeletal'"/>
+                    <xf:bind id="xr-side-bind" ref="xr-side" name="xr-side" required="true()"
+                             relevant="$xr-site != ''"/>
+                    <xf:bind id="control-9-bind" ref="control-9" name="control-9"
+                             relevant="$xray-type != ''"/>
+                    <xf:bind id="control-10-bind" ref="control-10" name="control-10"
+                             relevant="$further-management-required = true() and (contains($outcome, 'gp-called') or contains($outcome, 'patient-informed') or contains($outcome, 'patient-recalled') or contains($outcome, 'ward-informed'))"/>
+                    <xf:bind id="chest-management-bind" ref="chest-management" name="chest-management"
+                             relevant="$xray-type ='chest' and $further-management-required = 'true'"/>
+                    <xf:bind id="management-skeletal-bind" ref="management-skeletal"
+                             name="management-skeletal"
+                             relevant="$xray-type ='skeletal' and $further-management-required = 'true'"/>
+                    <xf:bind id="other-bind" ref="other" name="other"
+                             relevant="$chest-management ='other' or $management-skeletal ='other'"/>
+                </xf:bind>
+            </xf:bind>
+
+            <!-- Metadata -->
+            <xf:instance xxf:readonly="true" id="fr-form-metadata" xxf:exclude-result-prefixes="#all">
+                <metadata>
+                    <application-name>leeds-ed-forms</application-name>
+                    <form-name>x-ray-misses</form-name>
+                    <title xml:lang="en">X-Ray Misses</title>
+                    <description xml:lang="en"/>
+                </metadata>
+            </xf:instance>
+
+            <!-- Attachments -->
+            <xf:instance id="fr-form-attachments" xxf:exclude-result-prefixes="#all">
+                <attachments>
+                    <css mediatype="text/css" filename="" size=""/>
+                    <pdf mediatype="application/pdf" filename="" size=""/>
+                </attachments>
+            </xf:instance>
+
+            <!-- All form resources -->
+            <xf:instance xxf:readonly="true" id="fr-form-resources" xxf:exclude-result-prefixes="#all">
+                <resources>
+                    <resource xml:lang="en">
+                        <xray-type>
+                            <label>X-Ray Type</label>
+                            <hint/>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Chest</label>
+                                <value>chest</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Skeletal</label>
+                                <value>skeletal</value>
+                            </item>
+                        </xray-type>
+                        <xr-site>
+                            <label>XR Site</label>
+                            <hint/>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Mandible</label>
+                                <value>mandible</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Orthopantogram</label>
+                                <value>orthopantogram</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Facial</label>
+                                <value>facial</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Finger</label>
+                                <value>first-choice</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Hand</label>
+                                <value>second-choice</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Wrist</label>
+                                <value>third-choice</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Radius/Ulna</label>
+                                <value>radius-ulna</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Elbow</label>
+                                <value>elbow</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Humerus</label>
+                                <value>humerus</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Shoulder</label>
+                                <value>shoulder</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Clavicle</label>
+                                <value>clavicle</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Cervical spine</label>
+                                <value>cervical-spine</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Thoracic spine</label>
+                                <value>thoracic-spine</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Lumbar spine</label>
+                                <value>lumbar</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Pelvis</label>
+                                <value>pelvis</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Hip</label>
+                                <value>hip</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Femur</label>
+                                <value>femur</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Knee</label>
+                                <value>knee</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Tibula/fibula</label>
+                                <value>tibula-fibula</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Ankle</label>
+                                <value>ankle</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Foot</label>
+                                <value>foot</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Toe</label>
+                                <value>toe</value>
+                            </item>
+                        </xr-site>
+                        <xr-side>
+                            <label>XR Side</label>
+                            <hint/>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Left</label>
+                                <value>left</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Right</label>
+                                <value>right</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>N/A</label>
+                                <value>n-a</value>
+                            </item>
+                        </xr-side>
+                        <control-9>
+                            <label>XR Report</label>
+                            <hint/>
+                        </control-9>
+                        <control-4>
+                            <label>Findings noted in department</label>
+                            <hint/>
+                        </control-4>
+                        <further-management-required>
+                            <label>Further management required?</label>
+                            <hint/>
+                        </further-management-required>
+                        <chest-management>
+                            <label>Management Required</label>
+                            <hint/>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Repeat CXR in 6-8 Weeks</label>
+                                <value>repeat</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Inform ward</label>
+                                <value>ward</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Urgent Recall</label>
+                                <value>urgen</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Other</label>
+                                <value>other</value>
+                            </item>
+                        </chest-management>
+                        <management-skeletal>
+                            <label>Management Required</label>
+                            <hint/>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Virtual Fracture Clinic</label>
+                                <value>vfc</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Hand Clinic</label>
+                                <value>hand</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Recall for immobilisation</label>
+                                <value>immobilisation</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>ED Clinic</label>
+                                <value>ed-clinic</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Discussion with Specialty</label>
+                                <value>discussion</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Other</label>
+                                <value>other</value>
+                            </item>
+                        </management-skeletal>
+                        <other>
+                            <label>Other</label>
+                            <hint/>
+                        </other>
+                        <outcome>
+                            <label>Outcome</label>
+                            <hint/>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Patient informed</label>
+                                <hint/>
+                                <value>patient-informed</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Patient recalled</label>
+                                <hint/>
+                                <value>patient-recalled</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>GP called</label>
+                                <hint/>
+                                <value>gp-called</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>GP letter sent</label>
+                                <hint/>
+                                <value>gp-letter-sent</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Ward informed</label>
+                                <hint/>
+                                <value>ward-informed</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Unable to contact patient</label>
+                                <hint/>
+                                <value>unable-to-contact-patient</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Unable to contact GP</label>
+                                <hint/>
+                                <value>unable-to-contact-gp</value>
+                            </item>
+                            <item is-stop-condition="false" is-stop-condition-text="" deprecated="false"
+                                  is-exclusive="false"
+                                  filter-groups="">
+                                <label>Left in ED Misses Folder</label>
+                                <hint/>
+                                <value>xr-left-in-ed-misses-folder</value>
+                            </item>
+                        </outcome>
+                        <control-10>
+                            <label>Record of discussions</label>
+                            <hint/>
+                        </control-10>
+                        <section-1>
+                            <label>Emergency Department XR Misses</label>
+                        </section-1>
+                    </resource>
+                </resources>
+            </xf:instance>
+
+            <!-- Utility instances for services -->
+            <xf:instance id="fr-service-request-instance" xxf:exclude-result-prefixes="#all">
+                <request/>
+            </xf:instance>
+            <xf:instance id="fr-service-response-instance" xxf:exclude-result-prefixes="#all">
+                <response/>
+            </xf:instance>
+        </xf:model>
+    </xh:head>
+    <xh:body>
+        <fr:view>
+            <fr:body xmlns:xbl="http://www.w3.org/ns/xbl" xmlns:p="http://www.orbeon.com/oxf/pipeline"
+                     xmlns:oxf="http://www.orbeon.com/oxf/processors">
+                <fr:section id="section-1-control" bind="section-1-bind">
+                    <xf:label ref="$form-resources/section-1/label"/>
+                    <fr:grid>
+                        <xh:tr>
+                            <xh:td>
+                                <xf:select1 id="xray-type-control" bind="xray-type-bind" appearance="dropdown"
+                                            class="buttons">
+                                    <xf:label ref="$form-resources/xray-type/label"/>
+                                    <xf:hint ref="$form-resources/xray-type/hint"/>
+                                    <xf:alert ref="$fr-resources/detail/labels/alert"/>
+                                    <xf:itemset ref="$form-resources/xray-type/item">
+                                        <xf:label ref="label"/>
+                                        <xf:value ref="value"/>
+                                    </xf:itemset>
+                                </xf:select1>
+                            </xh:td>
+                        </xh:tr>
+                        <xh:tr>
+                            <xh:td>
+                                <xf:select1 id="xr-site-control" bind="xr-site-bind" appearance="dropdown" class="buttons">
+                                    <xf:label ref="$form-resources/xr-site/label"/>
+                                    <xf:hint ref="$form-resources/xr-site/hint"/>
+                                    <xf:alert ref="$fr-resources/detail/labels/alert"/>
+                                    <xf:itemset ref="$form-resources/xr-site/item">
+                                        <xf:label ref="label"/>
+                                        <xf:value ref="value"/>
+                                    </xf:itemset>
+                                </xf:select1>
+                            </xh:td>
+                        </xh:tr>
+                        <xh:tr>
+                            <xh:td>
+                                <xf:select1 id="xr-side-control" bind="xr-side-bind" appearance="dropdown" class="buttons">
+                                    <xf:label ref="$form-resources/xr-side/label"/>
+                                    <xf:hint ref="$form-resources/xr-side/hint"/>
+                                    <xf:alert ref="$fr-resources/detail/labels/alert"/>
+                                    <xf:itemset ref="$form-resources/xr-side/item">
+                                        <xf:label ref="label"/>
+                                        <xf:value ref="value"/>
+                                    </xf:itemset>
+                                </xf:select1>
+                            </xh:td>
+                        </xh:tr>
+                        <xh:tr>
+                            <xh:td>
+                                <xf:textarea id="control-9-control" bind="control-9-bind">
+                                    <xf:label ref="$form-resources/control-9/label"/>
+                                    <xf:hint ref="$form-resources/control-9/hint"/>
+                                    <xf:alert ref="$fr-resources/detail/labels/alert"/>
+                                </xf:textarea>
+                            </xh:td>
+                        </xh:tr>
+                        <xh:tr>
+                            <xh:td>
+                                <fr:yesno-input xmlns="http://orbeon.org/oxf/xml/form-builder"
+                                                xmlns:xxbl="http://orbeon.org/oxf/xml/xbl"
+                                                yes-no-boolean-stop-condition=""
+                                                id="control-4-control"
+                                                bind="control-4-bind">
+                                    <xf:label ref="$form-resources/control-4/label"/>
+                                    <xf:hint ref="$form-resources/control-4/hint"/>
+                                    <xf:alert ref="$fr-resources/detail/labels/alert"/>
+                                </fr:yesno-input>
+                            </xh:td>
+                        </xh:tr>
+                        <xh:tr>
+                            <xh:td>
+                                <fr:yesno-input xmlns="http://orbeon.org/oxf/xml/form-builder"
+                                                xmlns:xxbl="http://orbeon.org/oxf/xml/xbl"
+                                                yes-no-boolean-stop-condition=""
+                                                id="further-management-required-control"
+                                                bind="further-management-required-bind">
+                                    <xf:label ref="$form-resources/further-management-required/label"/>
+                                    <xf:hint ref="$form-resources/further-management-required/hint"/>
+                                    <xf:alert ref="$fr-resources/detail/labels/alert"/>
+                                </fr:yesno-input>
+                            </xh:td>
+                        </xh:tr>
+                        <xh:tr>
+                            <xh:td>
+                                <xf:select1 id="chest-management-control" bind="chest-management-bind" appearance="full"
+                                            class="buttons">
+                                    <xf:label ref="$form-resources/chest-management/label"/>
+                                    <xf:hint ref="$form-resources/chest-management/hint"/>
+                                    <xf:alert ref="$fr-resources/detail/labels/alert"/>
+                                    <xf:itemset ref="$form-resources/chest-management/item">
+                                        <xf:label ref="label"/>
+                                        <xf:value ref="value"/>
+                                    </xf:itemset>
+                                </xf:select1>
+                            </xh:td>
+                        </xh:tr>
+                        <xh:tr>
+                            <xh:td>
+                                <xf:select1 id="management-skeletal-control" bind="management-skeletal-bind"
+                                            appearance="full"
+                                            class="as-multiselect buttons">
+                                    <xf:label ref="$form-resources/management-skeletal/label"/>
+                                    <xf:hint ref="$form-resources/management-skeletal/hint"/>
+                                    <xf:alert ref="$fr-resources/detail/labels/alert"/>
+                                    <xf:itemset ref="$form-resources/management-skeletal/item">
+                                        <xf:label ref="label"/>
+                                        <xf:value ref="value"/>
+                                    </xf:itemset>
+                                </xf:select1>
+                            </xh:td>
+                        </xh:tr>
+                        <xh:tr>
+                            <xh:td>
+                                <fr:tinymce xmlns:f="http://orbeon.org/oxf/xml/formatting"
+                                            xmlns:xxbl="http://orbeon.org/oxf/xml/xbl"
+                                            id="other-control"
+                                            bind="other-bind">
+                                    <xf:label ref="$form-resources/other/label"/>
+                                    <xf:hint ref="$form-resources/other/hint"/>
+                                    <xf:alert ref="$fr-resources/detail/labels/alert"/>
+                                </fr:tinymce>
+                            </xh:td>
+                        </xh:tr>
+                        <xh:tr>
+                            <xh:td>
+                                <xf:select1 id="outcome-control" bind="outcome-bind" appearance="full"
+                                            class="as-multiselect">
+                                    <xf:label ref="$form-resources/outcome/label"/>
+                                    <xf:hint ref="$form-resources/outcome/hint"/>
+                                    <xf:alert ref="$fr-resources/detail/labels/alert"/>
+                                    <xf:itemset ref="$form-resources/outcome/item">
+                                        <xf:label ref="label"/>
+                                        <xf:value ref="value"/>
+                                    </xf:itemset>
+                                </xf:select1>
+                            </xh:td>
+                        </xh:tr>
+                        <xh:tr>
+                            <xh:td>
+                                <xf:textarea id="control-10-control" bind="control-10-bind">
+                                    <xf:label ref="$form-resources/control-10/label"/>
+                                    <xf:hint ref="$form-resources/control-10/hint"/>
+                                    <xf:alert ref="$fr-resources/detail/labels/alert"/>
+                                </xf:textarea>
+                            </xh:td>
+                        </xh:tr>
+                    </fr:grid>
+                </fr:section>
+            </fr:body>
+        </fr:view>
+    </xh:body>
+</xh:html>
